@@ -18,6 +18,7 @@
   "author": "Drew Brokke",
   "license": "MIT",
   "dependencies": {
+    "cheerio": "^0.22.0",
     "configstore": "^2.1.0",
     "request": "^2.75.0"
   },
