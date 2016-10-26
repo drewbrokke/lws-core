@@ -1,11 +1,10 @@
 /* @flow */
 
-import cheerio from 'cheerio';
+import BaseScraper from './base-scraper';
 
 const SELECTOR_CONTEXTS: string = '#contextName > option';
 const SELECTOR_METHODS: string = '.lfr-api-signature .method-name';
 const SELECTOR_SERVICES: string = '.panel-heading .title-text';
-const SEPARATOR: string = '  ';
 
 function capitalize(word: string): string {
 	const letters = word.split('');
@@ -17,37 +16,19 @@ function capitalize(word: string): string {
 	return letters.join('');
 }
 
-function composeMethodsSelector(serviceName: string): string {
-	return `${SELECTOR_METHODS}[data-metadata="${capitalize(serviceName)}ServiceImpl"]`;
-}
-
-function truthyArrayFromString(s: string): string[] {
-	return s.trim().split(SEPARATOR).filter(item => Boolean(item));
-}
-
-export default class MainScraper {
-	$: Function;
-
-	constructor(html: string): void {
-		this.$ = cheerio.load(html);
-	}
-
+export default class MainScraper extends BaseScraper {
 	getContexts(): string[] {
-		const optionsString: string = this.$(SELECTOR_CONTEXTS).text();
-
-		return truthyArrayFromString(optionsString);
+		return this.getArrayFromSelector(SELECTOR_CONTEXTS);
 	}
 
 	getMethods(service?: string): string[] {
 		let selector = SELECTOR_METHODS;
 
 		if (service) {
-			selector = composeMethodsSelector(service);
+			selector = MainScraper.composeMethodsSelector(service);
 		}
 
-		const methods = this.$(selector).text();
-
-		return truthyArrayFromString(methods);
+		return this.getArrayFromSelector(selector);
 	}
 
 	getMethodURLs(method: string, service?: string): string[] {
@@ -56,18 +37,20 @@ export default class MainScraper {
 		let selector: string = SELECTOR_METHODS;
 
 		if (service) {
-			selector = composeMethodsSelector(service);
+			selector = MainScraper.composeMethodsSelector(service);
 		}
 
 		const rawMethods: Object = $(selector).filter(
-			(k, v) => $(v).text().trim() === method);
+			(k:string, v: string) => $(v).text().trim() === method);
 
 		return rawMethods.map((k: string, v: Object) => $(v).attr('href')).toArray();
 	}
 
 	getServices(): string[] {
-		const services = this.$(SELECTOR_SERVICES).text();
+		return this.getArrayFromSelector(SELECTOR_SERVICES);
+	}
 
-		return truthyArrayFromString(services);
+	static composeMethodsSelector(serviceName: string): string {
+		return `${SELECTOR_METHODS}[data-metadata="${capitalize(serviceName)}ServiceImpl"]`;
 	}
 }
