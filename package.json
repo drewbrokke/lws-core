@@ -19,8 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "cheerio": "^0.22.0",
-    "configstore": "^2.1.0",
-    "request": "^2.75.0"
+    "configstore": "^2.1.0"
   },
   "devDependencies": {
     "ava": "^0.16.0",
