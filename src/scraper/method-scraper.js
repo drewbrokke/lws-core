@@ -8,17 +8,6 @@ const SELECTOR_PARAMETER_NAMES: string = `${SELECTOR_PARAMETERS} .lfr-api-param-
 const SELECTOR_PARAMETER_TYPES: string = `${SELECTOR_PARAMETERS} .lfr-api-param-type`;
 
 export default class MethodScraper extends BaseScraper {
-	getParameterMap(): {[index:string]: string} {
-		const parameterNames: string[] = this.getParameterNamesArray();
-		const parameterTypes: string[] = this.getParameterTypesArray();
-
-		return parameterNames.reduce(
-			(prev, cur, i) => {
-				prev[cur] = parameterTypes[i];
-				return prev;
-			}, {});
-	}
-
 	getParameterNamesArray(): string[] {
 		return this.getArrayFromSelector(SELECTOR_PARAMETER_NAMES);
 	}
