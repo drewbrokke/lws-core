@@ -2,6 +2,8 @@ import test from 'ava';
 
 import {zipObjectFromArrays} from '../build/parameter-util';
 
+test.todo('getBasicTypeValue returns a basic value for each of the possible parameter types');
+
 test('zipObjectFromArrays returns an object created from two arrays', t => {
 	const expected = {
 		keyOne: 'valueOne',
