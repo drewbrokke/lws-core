@@ -1,6 +1,6 @@
 /* @flow */
 
-export default function validateNumber(port: number | string): boolean {
+export default function validateNumber(port: number | string | void): boolean {
 	if (typeof port === 'number') {
 		return true;
 	}

@@ -13,3 +13,15 @@ export type Config = {
 	currentInstance: string,
 	instances: {[id:string]: InstanceConfig}
 }
+
+export type RequestOptions = {
+	auth: string,
+	host: string,
+	method: string,
+	path: string,
+	port?: number,
+	headers: {
+		'Content-Type': string,
+		'Content-Length': number
+	}
+}

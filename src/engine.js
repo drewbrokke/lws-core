@@ -9,7 +9,7 @@ import validateNumber from './validate-number';
 
 import type {IncomingMessage as HttpIncomingMessage} from 'http';
 import type {IncomingMessage as HttpsIncomingMessage} from 'https';
-import type {InstanceConfig} from './types';
+import type {InstanceConfig, RequestOptions} from './types';
 
 export default class Engine {
 	instanceConfig: InstanceConfig;
@@ -20,14 +20,13 @@ export default class Engine {
 
 	invoke(apiPath: string, payload: Object): Promise<any> {
 		const payloadString: string = querystring.stringify(payload);
-		const port: number = this.instanceConfig.port;
+		const port: number | void = this.instanceConfig.port;
 
-		const requestOptions = {
+		const requestOptions: RequestOptions = {
 			auth: `${this.instanceConfig.username}:${this.instanceConfig.password}`,
 			host: this.instanceConfig.host,
 			method: 'POST',
 			path: path.join('/api/jsonws', apiPath),
-			port: this.instanceConfig.secure ? 443 : 80,
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
 				'Content-Length': Buffer.byteLength(payloadString)
@@ -60,7 +59,6 @@ export default class Engine {
 				: http.request(requestOptions, handleResponse);
 
 			request.on('error', (err: Error) => reject(err));
-
 			request.write(payloadString);
 			request.end();
 		});
