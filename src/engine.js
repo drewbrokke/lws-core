@@ -19,23 +19,7 @@ export default class Engine {
 	}
 
 	invoke(apiPath: string, payload: Object): Promise<any> {
-		const payloadString: string = querystring.stringify(payload);
-		const port: number | void = this.instanceConfig.port;
-
-		const requestOptions: RequestOptions = {
-			auth: `${this.instanceConfig.username}:${this.instanceConfig.password}`,
-			host: this.instanceConfig.host,
-			method: 'POST',
-			path: path.join('/api/jsonws', apiPath),
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-				'Content-Length': Buffer.byteLength(payloadString)
-			}
-		};
-
-		if (validateNumber(port) && port != 443 && port != 80) {
-			requestOptions['port'] = Number(this.instanceConfig.port);
-		}
+		const requestOptions: RequestOptions = Engine.constructRequestOptions(apiPath, payload, this.instanceConfig);
 
 		return new Promise((resolve, reject) => {
 			function handleResponse(response: HttpsIncomingMessage | HttpIncomingMessage): void {
@@ -59,8 +43,31 @@ export default class Engine {
 				: http.request(requestOptions, handleResponse);
 
 			request.on('error', (err: Error) => reject(err));
-			request.write(payloadString);
+			request.write(querystring.stringify(payload));
 			request.end();
 		});
+	}
+
+	static constructRequestOptions(
+		apiPath: string, payload: Object, instanceConfig: InstanceConfig): RequestOptions {
+		const payloadString: string = querystring.stringify(payload);
+		const port: number | void = instanceConfig.port;
+
+		const requestOptions: RequestOptions = {
+			auth: `${instanceConfig.username}:${instanceConfig.password}`,
+			host: instanceConfig.host,
+			method: 'POST',
+			path: path.join('/api/jsonws', apiPath),
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Content-Length': Buffer.byteLength(payloadString)
+			}
+		};
+
+		if (validateNumber(port) && port != 443 && port != 80) {
+			requestOptions['port'] = Number(instanceConfig.port);
+		}
+
+		return requestOptions;
 	}
 }
