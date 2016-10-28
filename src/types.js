@@ -14,10 +14,15 @@ export type Config = {
 	instances: {[id:string]: InstanceConfig}
 }
 
+type GET = 'GET';
+type POST = 'POST';
+
+type HTTPMethod = GET | POST;
+
 export type RequestOptions = {
 	auth: string,
 	host: string,
-	method: string,
+	method: HTTPMethod,
 	path: string,
 	port?: number,
 	headers: {
