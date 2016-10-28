@@ -25,9 +25,12 @@ export function getBasicTypeValue(type: string): any {
 	return '';
 }
 
-export function zipObjectFromArrays(keys: string[], values: string[]): {[index:string]: string} {
-	return keys.reduce((prev, cur, i) => {
-			prev[cur] = values[i];
-			return prev;
-		}, {});
+export function zipObjectFromArrays(keys: string[], values: string[], object: Object = {}): {[index:string]: string} {
+	if (keys.length === 0 || values.length === 0) {
+		return object;
+	}
+
+	object[keys[0]] = values[0];
+
+	return zipObjectFromArrays(keys.slice(1), values.slice(1), object);
 }
