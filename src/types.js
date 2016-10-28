@@ -4,7 +4,7 @@ export type InstanceConfig = {
 	host: string,
 	maildomain: string,
 	password: string,
-	port: number,
+	port?: number,
 	secure: boolean,
 	username: string
 }
