@@ -19,7 +19,7 @@ export default class Engine {
 	}
 
 	invoke(apiPath: string, payload: Object): Promise<any> {
-		const requestOptions: RequestOptions = Engine.constructRequestOptions(apiPath, payload, this.instanceConfig);
+		const requestOptions: RequestOptions = Engine.constructPostRequestOptions(apiPath, payload, this.instanceConfig);
 
 		return new Promise((resolve, reject) => {
 			function handleResponse(response: HttpsIncomingMessage | HttpIncomingMessage): void {
@@ -48,7 +48,7 @@ export default class Engine {
 		});
 	}
 
-	static constructRequestOptions(
+	static constructPostRequestOptions(
 		apiPath: string, payload: Object, instanceConfig: InstanceConfig): RequestOptions {
 		const payloadString: string = querystring.stringify(payload);
 		const port: number | void = instanceConfig.port;
