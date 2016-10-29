@@ -25,7 +25,7 @@ export type RequestOptions = {
 	method: HTTPMethod,
 	path: string,
 	port?: number,
-	headers: {
+	headers?: {
 		'Content-Type': string,
 		'Content-Length': number
 	}
