@@ -131,7 +131,7 @@ export default class Engine {
 
 		this.methodScrapers.set(methodName, methodScraper);
 
-		return this.getMethodScraper(methodName);
+		return this.getMethodScraper(methodName, context);
 	}
 
 	getRootHTML(): Promise<string> {
