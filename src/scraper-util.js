@@ -6,15 +6,17 @@ import MethodScraper from './scraper/method-scraper';
 import type {InstanceConfig} from './types';
 
 export async function getMainScraper(engine: Engine): Promise<MainScraper> {
-	const rootHtml = await engine.getRootHTML();
+	const rootHtml: string = await engine.getRootHTML();
 
 	return new MainScraper(rootHtml);
 }
 
 export async function getMethodScraper(methodName: string, engine: Engine): Promise<MethodScraper> {
 	const mainScraper: MainScraper = await getMainScraper(engine);
-	const urls = mainScraper.getMethodURLs(methodName);
-	const methodHtml = await engine.getHTML(urls[0]);
+
+	const urls: string[] = mainScraper.getMethodURLs(methodName);
+
+	const methodHtml: string = await engine.getHTML(urls[0]);
 
 	return new MethodScraper(methodHtml);
 }
