@@ -77,7 +77,7 @@ function constructGetRequestOptions(
 	address: string, instanceConfig: InstanceConfig): RequestOptions {
 	const port: number | void = instanceConfig.port;
 
-	const urlPath: string = url.parse(address).path || '/';
+	const urlPath: string = url.parse(address).path || '/api/jsonws';
 
 	const requestOptions: RequestOptions = {
 		auth: `${instanceConfig.username}:${instanceConfig.password}`,
