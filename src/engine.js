@@ -18,4 +18,8 @@ export default class Engine {
 	getHTML(address: string): Promise<any> {
 		return get(address, this.instanceConfig);
 	}
+
+	getRootHTML(): Promise<string> {
+		return this.getHTML('/api/jsonws');
+	}
 }
