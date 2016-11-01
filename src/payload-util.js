@@ -1,16 +1,17 @@
 /* @flow */
 
 import Engine from './engine';
+import MethodScraper from './scraper/method-scraper';
 import {getMethodScraper} from './scraper-util';
 
-export function getBaseMethodPayload(methodName: string, engine: Engine): Promise<Object> {
-	return getMethodScraper(methodName, engine).then(methodScraper => {
-		const parameterNames: string[] = methodScraper.getParameterNamesArray();
-		const parameterTypes: string[] = methodScraper.getParameterTypesArray();
-		const parameterValues: string[] = parameterTypes.map(getBasicTypeValue);
+export async function getBaseMethodPayload(methodName: string, engine: Engine): Promise<Object> {
+	const methodScraper: MethodScraper = await getMethodScraper(methodName, engine);
 
-		return zipObjectFromArrays(parameterNames, parameterValues);
-	})
+	const parameterNames: string[] = methodScraper.getParameterNamesArray();
+	const parameterTypes: string[] = methodScraper.getParameterTypesArray();
+	const parameterValues: string[] = parameterTypes.map(getBasicTypeValue);
+
+	return zipObjectFromArrays(parameterNames, parameterValues);
 }
 
 function getBasicTypeValue(type: string): any {
