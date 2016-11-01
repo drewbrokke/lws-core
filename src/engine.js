@@ -15,6 +15,10 @@ export default class Engine {
 		return post(apiPath, payload, this.instanceConfig);
 	}
 
+	getCompany(): Promise<Object> {
+		return this.invoke('/company/get-company-by-virtual-host', {virtualHost: this.instanceConfig.host});
+	}
+
 	getHTML(address: string): Promise<string> {
 		return get(address, this.instanceConfig);
 	}
