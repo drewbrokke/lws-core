@@ -7,7 +7,7 @@ import {get, post} from './http-util.js';
 import MainScraper from './scraper/main-scraper';
 import MethodScraper from './scraper/method-scraper';
 import {getBasicTypeValue, zipObjectFromArrays} from './payload-util';
-import type {InstanceConfig, RequestOptions} from './types';
+import type {InstanceConfig, InvokerOptions, RequestOptions} from './types';
 
 const BASE_PATH = '/api/jsonws';
 const BASE_CONTEXT = 'portal';
@@ -25,6 +25,16 @@ export default class Engine {
 
 	invoke(apiPath: string, payload: Object): Promise<any> {
 		return post(apiPath, payload, this.instanceConfig);
+	}
+
+	async invokeFromObject(invokerOptions: InvokerOptions, payload: Object): Promise<any> {
+		const context: string = invokerOptions.context || BASE_PATH;
+
+		const methodScraper: MethodScraper = await this.getMethodScraper(invokerOptions.methodName, context);
+
+		const apiPath: string = methodScraper.getApiPath();
+
+		return this.invoke(apiPath, payload);
 	}
 
 	async getAvalableContexts(): Promise<string[]> {
