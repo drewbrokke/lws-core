@@ -1,27 +1,5 @@
 /* @flow */
 
-import Engine from './engine';
-import MainScraper from './scraper/main-scraper';
-import MethodScraper from './scraper/method-scraper';
-
-export function getBaseMethodPayload(methodScraper: MethodScraper): Promise<Object> {
-	const parameterNames: string[] = methodScraper.getParameterNamesArray();
-	const parameterTypes: string[] = methodScraper.getParameterTypesArray();
-	const parameterValues: string[] = parameterTypes.map(getBasicTypeValue);
-
-	const fullObject: Object = zipObjectFromArrays(parameterNames, parameterValues);
-
-	if (fullObject.hasOwnProperty('p_auth')) {
-		delete fullObject.p_auth;
-	}
-
-	if (fullObject.hasOwnProperty('serviceContext')) {
-		delete fullObject.serviceContext;
-	}
-
-	return fullObject;
-}
-
 export function getBasicTypeValue(type: string): any {
 	if (type.includes('[]') ||
 		type.includes('util.List')) {
