@@ -1,12 +1,10 @@
 /* @flow */
 
 import Engine from './engine';
+import MainScraper from './scraper/main-scraper';
 import MethodScraper from './scraper/method-scraper';
-import {getMethodScraper} from './scraper-util';
 
-export async function getBaseMethodPayload(methodName: string, engine: Engine): Promise<Object> {
-	const methodScraper: MethodScraper = await getMethodScraper(methodName, engine);
-
+export function getBaseMethodPayload(methodScraper: MethodScraper): Promise<Object> {
 	const parameterNames: string[] = methodScraper.getParameterNamesArray();
 	const parameterTypes: string[] = methodScraper.getParameterTypesArray();
 	const parameterValues: string[] = parameterTypes.map(getBasicTypeValue);
