@@ -11,7 +11,17 @@ export async function getBaseMethodPayload(methodName: string, engine: Engine): 
 	const parameterTypes: string[] = methodScraper.getParameterTypesArray();
 	const parameterValues: string[] = parameterTypes.map(getBasicTypeValue);
 
-	return zipObjectFromArrays(parameterNames, parameterValues);
+	const fullObject: Object = zipObjectFromArrays(parameterNames, parameterValues);
+
+	if (fullObject.hasOwnProperty('p_auth')) {
+		delete fullObject.p_auth;
+	}
+
+	if (fullObject.hasOwnProperty('serviceContext')) {
+		delete fullObject.serviceContext;
+	}
+
+	return fullObject;
 }
 
 export function getBasicTypeValue(type: string): any {
