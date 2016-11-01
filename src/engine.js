@@ -35,7 +35,7 @@ export default class Engine {
 
 		this.mainScraper = mainScraper;
 
-		return mainScraper;
+		return this.getMainScraper();
 	}
 
 	async getMethodBasePayload(methodName: string): Promise<Object> {
@@ -73,7 +73,7 @@ export default class Engine {
 
 		this.methodScrapers.set(methodName, methodScraper);
 
-		return methodScraper;
+		return this.getMethodScraper(methodName);
 	}
 
 	getHTML(address: string): Promise<string> {
