@@ -14,6 +14,12 @@ export type Config = {
 	instances: {[id:string]: InstanceConfig}
 }
 
+export type InvokerOptions = {
+	context?: string,
+	methodName: string,
+	service?: string
+}
+
 type GET = 'GET';
 type POST = 'POST';
 
