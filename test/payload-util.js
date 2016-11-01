@@ -1,3 +1,5 @@
+import 'babel-polyfill';
+
 import test from 'ava';
 
 import {zipObjectFromArrays} from '../build/payload-util';
