@@ -7,10 +7,14 @@ import querystring from 'querystring';
 import url from 'url';
 
 import validateNumber from './validate-number';
-import type {IncomingMessage as HttpIncomingMessage} from 'http';
-import type {IncomingMessage as HttpsIncomingMessage} from 'https';
+import type {IncomingMessage as HttpIncomingMessage, ClientRequest as HttpClientRequest} from 'http';
+import type {IncomingMessage as HttpsIncomingMessage, ClientRequest as HttpsClientRequest} from 'https';
 
 import type {InstanceConfig, RequestOptions} from './types';
+
+interface Protocol {
+	request(requestOptions: RequestOptions, handleResponse: Function): HttpClientRequest | HttpsClientRequest;
+}
 
 export function get(address: string, instanceConfig: InstanceConfig): Promise<any> {
 	const requestOptions: RequestOptions = constructGetRequestOptions(address, instanceConfig);
@@ -32,9 +36,8 @@ export function get(address: string, instanceConfig: InstanceConfig): Promise<an
 			response.on('end', handleResponseEnd);
 		}
 
-		const request = instanceConfig.secure
-			? https.request(requestOptions, handleResponse)
-			: http.request(requestOptions, handleResponse);
+		const protocol: Protocol = getProtocol(instanceConfig.secure);
+		const request: HttpClientRequest | HttpsClientRequest = protocol.request(requestOptions, handleResponse);
 
 		request.on('error', (err: Error) => reject(err));
 		request.end();
@@ -61,9 +64,8 @@ export function post(apiPath: string, payload: Object, instanceConfig: InstanceC
 			response.on('end', handleResponseEnd);
 		}
 
-		const request = instanceConfig.secure
-			? https.request(requestOptions, handleResponse)
-			: http.request(requestOptions, handleResponse);
+		const protocol: Protocol = getProtocol(instanceConfig.secure);
+		const request: HttpClientRequest | HttpsClientRequest = protocol.request(requestOptions, handleResponse);
 
 		request.on('error', (err: Error) => reject(err));
 		request.write(querystring.stringify(payload));
@@ -112,4 +114,12 @@ function constructPostRequestOptions(
 	}
 
 	return requestOptions;
+}
+
+function getProtocol(secure: boolean): Protocol {
+	if (secure) {
+		return https;
+	}
+
+	return http;
 }
