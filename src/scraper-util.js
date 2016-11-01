@@ -5,14 +5,16 @@ import MainScraper from './scraper/main-scraper';
 import MethodScraper from './scraper/method-scraper';
 import type {InstanceConfig} from './types';
 
-export function getMainScraper(engine: Engine): Promise<MainScraper> {
-	return engine.getRootHTML().then(html => new MainScraper(html));
+export async function getMainScraper(engine: Engine): Promise<MainScraper> {
+	const rootHtml = await engine.getRootHTML();
+
+	return new MainScraper(rootHtml);
 }
 
-export function getMethodScraper(methodName: string, engine: Engine): Promise<MethodScraper> {
-	return getMainScraper(engine).then(mainScraper => {
-		const urls = mainScraper.getMethodURLs(methodName);
+export async function getMethodScraper(methodName: string, engine: Engine): Promise<MethodScraper> {
+	const mainScraper: MainScraper = await getMainScraper(engine);
+	const urls = mainScraper.getMethodURLs(methodName);
+	const methodHtml = await engine.getHTML(urls[0]);
 
-		return engine.getHTML(urls[0]).then(html => new MethodScraper(html));
-	})
+	return new MethodScraper(methodHtml);
 }
