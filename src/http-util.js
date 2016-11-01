@@ -56,7 +56,7 @@ export function post(apiPath: string, payload: Object, instanceConfig: InstanceC
 					return reject(body);
 				}
 
-				return resolve(body);
+				return resolve(JSON.parse(body));
 
 			}
 
