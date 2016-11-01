@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import {zipObjectFromArrays} from '../build/parameter-util';
+import {zipObjectFromArrays} from '../build/payload-util';
 
 test.todo('getBasicTypeValue returns a basic value for each of the possible parameter types');
 

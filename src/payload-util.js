@@ -14,7 +14,7 @@ export async function getBaseMethodPayload(methodName: string, engine: Engine): 
 	return zipObjectFromArrays(parameterNames, parameterValues);
 }
 
-function getBasicTypeValue(type: string): any {
+export function getBasicTypeValue(type: string): any {
 	if (type.includes('[]') ||
 		type.includes('util.List')) {
 		return null;
@@ -38,7 +38,7 @@ function getBasicTypeValue(type: string): any {
 	return '';
 }
 
-function zipObjectFromArrays(keys: string[], values: string[], object: Object = {}): {[index:string]: string} {
+export function zipObjectFromArrays(keys: string[], values: string[], object: Object = {}): {[index:string]: string} {
 	if (keys.length === 0 || values.length === 0) {
 		return object;
 	}
