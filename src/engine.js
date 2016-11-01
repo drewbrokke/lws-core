@@ -1,5 +1,7 @@
 /* @flow */
 
+import url from 'url';
+
 import {get, post} from './http-util.js';
 
 import MainScraper from './scraper/main-scraper';
@@ -7,18 +9,57 @@ import MethodScraper from './scraper/method-scraper';
 import {getBasicTypeValue, zipObjectFromArrays} from './payload-util';
 import type {InstanceConfig, RequestOptions} from './types';
 
+const BASE_PATH = '/api/jsonws';
+const BASE_CONTEXT = 'portal';
+
 export default class Engine {
 	instanceConfig: InstanceConfig;
-	mainScraper: MainScraper;
+	mainScrapers: Map<string, MainScraper>;
 	methodScrapers: Map<string, MethodScraper>;
 
 	constructor(instanceConfig: InstanceConfig) {
 		this.instanceConfig = instanceConfig;
+		this.mainScrapers = new Map();
 		this.methodScrapers = new Map();
 	}
 
 	invoke(apiPath: string, payload: Object): Promise<any> {
 		return post(apiPath, payload, this.instanceConfig);
+	}
+
+	async getAvalableContexts(): Promise<string[]> {
+		const mainScraper: MainScraper = await this.getMainScraper(BASE_CONTEXT);
+
+		return mainScraper.getContexts();
+	}
+
+	async getAvailableMethods(context?: string = BASE_CONTEXT, service?: string): Promise<string[]> {
+		const contextScraper: MainScraper = await this.getMainScraper(context);
+
+		return contextScraper.getMethods(service);
+	}
+
+	async getAvaliableServices(context: string = BASE_CONTEXT): Promise<string[]> {
+		const contextScraper: MainScraper = await this.getMainScraper(context);
+
+		return contextScraper.getServices();
+	}
+
+	getContextHTML(context?: string): Promise<string> {
+		if (!context || context == BASE_CONTEXT) {
+			return this.getRootHTML();
+		}
+
+		const urlObject: Object = {
+			pathname: BASE_PATH,
+			query: {
+				contextName: context
+			}
+		}
+
+		const urlString = url.format(urlObject);
+
+		return this.getHTML(urlString);
 	}
 
 	getCompany(): Promise<Object> {
@@ -29,21 +70,24 @@ export default class Engine {
 		return get(address, this.instanceConfig);
 	}
 
-	async getMainScraper(): Promise<MainScraper> {
-		if (this.mainScraper) {
-			return this.mainScraper;
+	async getMainScraper(context?: string = BASE_CONTEXT): Promise<MainScraper> {
+		let mainScraper: MainScraper | void = this.mainScrapers.get(context);
+
+		if (mainScraper) {
+			return mainScraper;
 		}
 
-		const rootHtml: string = await this.getRootHTML();
-		const mainScraper = new MainScraper(rootHtml);
+		const contextHTML: string = await this.getContextHTML(context);
 
-		this.mainScraper = mainScraper;
+		mainScraper = new MainScraper(contextHTML);
 
-		return this.getMainScraper();
+		this.mainScrapers.set(context, mainScraper);
+
+		return this.getMainScraper(context);
 	}
 
-	async getMethodBasePayload(methodName: string): Promise<Object> {
-		const methodScraper: MethodScraper = await this.getMethodScraper(methodName);
+	async getMethodBasePayload(methodName: string, context?: string = BASE_CONTEXT): Promise<Object> {
+		const methodScraper: MethodScraper = await this.getMethodScraper(methodName, context);
 
 		const parameterNames: string[] = methodScraper.getParameterNamesArray();
 		const parameterTypes: string[] = methodScraper.getParameterTypesArray();
@@ -62,14 +106,14 @@ export default class Engine {
 		return fullObject;
 	}
 
-	async getMethodScraper(methodName: string): Promise<MethodScraper> {
+	async getMethodScraper(methodName: string, context?: string = BASE_PATH): Promise<MethodScraper> {
 		let methodScraper: MethodScraper | void = this.methodScrapers.get(methodName);
 
 		if (methodScraper) {
 			return methodScraper;
 		}
 
-		const mainScraper = await this.getMainScraper();
+		const mainScraper = await this.getMainScraper(context);
 		const urls: string[] = mainScraper.getMethodURLs(methodName);
 		const methodHtml: string = await this.getHTML(urls[0]);
 
@@ -81,6 +125,6 @@ export default class Engine {
 	}
 
 	getRootHTML(): Promise<string> {
-		return this.getHTML('/api/jsonws');
+		return this.getHTML(BASE_PATH);
 	}
 }
