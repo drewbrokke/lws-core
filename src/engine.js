@@ -15,7 +15,7 @@ export default class Engine {
 		return post(apiPath, payload, this.instanceConfig);
 	}
 
-	getHTML(address: string): Promise<any> {
+	getHTML(address: string): Promise<string> {
 		return get(address, this.instanceConfig);
 	}
 
