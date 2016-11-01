@@ -25,6 +25,10 @@ export default class Engine {
 		return this.invoke('/company/get-company-by-virtual-host', {virtualHost: this.instanceConfig.host});
 	}
 
+	getHTML(address: string): Promise<string> {
+		return get(address, this.instanceConfig);
+	}
+
 	async getMainScraper(): Promise<MainScraper> {
 		if (this.mainScraper) {
 			return this.mainScraper;
@@ -74,10 +78,6 @@ export default class Engine {
 		this.methodScrapers.set(methodName, methodScraper);
 
 		return this.getMethodScraper(methodName);
-	}
-
-	getHTML(address: string): Promise<string> {
-		return get(address, this.instanceConfig);
 	}
 
 	getRootHTML(): Promise<string> {
